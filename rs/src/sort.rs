@@ -30,45 +30,45 @@ impl SortAlgorithm for SelectionSort {
 // strategy quick sort
 pub struct QuickSort;
 trait QuickSortUtil {
-  fn quick_sort<T: Ord>(self, arr: &mut [T], low: isize, high: isize);
-  fn partition<T: Ord>(self, arr: &mut [T], low: isize, high: isize) -> isize;
+    fn quick_sort<T: Ord>(self, arr: &mut [T], low: isize, high: isize);
+    fn partition<T: Ord>(self, arr: &mut [T], low: isize, high: isize) -> isize;
 }
 
-impl QuickSortUtil for QuickSort{
-  fn quick_sort<T: Ord>(self, arr: &mut [T], low: isize, high: isize) {
-    if low < high {
-        let p = self.partition(arr, low, high);
-        self.quick_sort(arr, low, p - 1);
-        self.quick_sort(arr, p + 1, high);
+impl QuickSortUtil for QuickSort {
+    fn quick_sort<T: Ord>(self, arr: &mut [T], low: isize, high: isize) {
+        if low < high {
+            let p = self.partition(arr, low, high);
+            self.quick_sort(arr, low, p - 1);
+            self.quick_sort(arr, p + 1, high);
+        }
     }
-}
-fn partition<T: Ord>(self, arr: &mut [T], low: isize, high: isize) -> isize {
-    let pivot = high as usize;
-    let mut store_index = low - 1;
-    let mut last_index = high;
+    fn partition<T: Ord>(self, arr: &mut [T], low: isize, high: isize) -> isize {
+        let pivot = high as usize;
+        let mut store_index = low - 1;
+        let mut last_index = high;
 
-    loop {
-        store_index += 1;
-        while arr[store_index as usize] < arr[pivot] {
+        loop {
             store_index += 1;
-        }
-        last_index -= 1;
-        while last_index >= 0 && arr[last_index as usize] > arr[pivot] {
+            while arr[store_index as usize] < arr[pivot] {
+                store_index += 1;
+            }
             last_index -= 1;
+            while last_index >= 0 && arr[last_index as usize] > arr[pivot] {
+                last_index -= 1;
+            }
+            if store_index >= last_index {
+                break;
+            } else {
+                arr.swap(store_index as usize, last_index as usize);
+            }
         }
-        if store_index >= last_index {
-            break;
-        } else {
-            arr.swap(store_index as usize, last_index as usize);
-        }
+        arr.swap(store_index as usize, pivot as usize);
+        store_index
     }
-    arr.swap(store_index as usize, pivot as usize);
-    store_index
-  }
 }
 
 impl SortAlgorithm for QuickSort {
-    fn sort<T>(&self, arr: &mut [T]) {
+    fn sort<T: Ord>(&self, arr: &mut [T]) {
         let len = arr.len();
         self.quick_sort(arr, 0, (len - 1) as isize);
     }
@@ -103,6 +103,32 @@ impl SortAlgorithm for BubbleSort {
 
 // strategy Heap Sort
 pub struct HeapSort;
+trait HeapSortUtil {
+    fn move_down<T: Ord>(self, arr: &mut [T],  root:  usize);
+}
+
+impl HeapSortUtil for HeapSort {
+    fn move_down<T: Ord>(self, arr: &mut [T],  root:  usize) {
+        let last = arr.len() - 1;
+        loop {
+            let left = 2 * root + 1;
+            if left > last {
+                break;
+            }
+            let right = left + 1;
+            let child = if right <= last && arr[right] > arr[left] {
+                right
+            } else {
+                left
+            };
+
+            if arr[child] > arr[root] {
+                arr.swap(root, child);
+            }
+            root = child;
+        }
+    }
+}
 impl SortAlgorithm for HeapSort {
     fn sort<T: Ord>(&self, arr: &mut [T]) {
         if arr.len() <= 1 {
@@ -111,12 +137,12 @@ impl SortAlgorithm for HeapSort {
 
         let last_parent = (arr.len() - 2) / 2;
         for i in (0..=last_parent).rev() {
-            move_down(arr, i);
+            self.move_down(arr, i);
         }
 
         for end in (1..arr.len()).rev() {
             arr.swap(0, end);
-            move_down(&mut arr[..end], 0);
+            self.move_down(&mut arr[..end], 0);
         }
     }
 }
@@ -133,26 +159,5 @@ pub struct Sort;
 impl Sort {
     pub fn sort<T: SortAlgorithm, K: Ord>(sort_alg: T, arr: &mut [K]) {
         sort_alg.sort(arr)
-    }
-}
-
-fn move_down<T: Ord>(arr: &mut [T], mut root: usize) {
-    let last = arr.len() - 1;
-    loop {
-        let left = 2 * root + 1;
-        if left > last {
-            break;
-        }
-        let right = left + 1;
-        let child = if right <= last && arr[right] > arr[left] {
-            right
-        } else {
-            left
-        };
-
-        if arr[child] > arr[root] {
-            arr.swap(root, child);
-        }
-        root = child;
     }
 }
