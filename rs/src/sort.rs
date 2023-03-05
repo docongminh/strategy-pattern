@@ -39,8 +39,14 @@ impl SortAlgorithm for QuickSort {
 // strategy insertion sort
 pub struct InsertionSort;
 impl SortAlgorithm for InsertionSort {
-  fn sort<T>(&self, arr: &mut [T]) {
-    println!("Insertion sort ! TODO");
+  fn sort<T: Ord>(&self, arr: &mut [T]) {
+    for i in 1..arr.len() {
+      let mut j = i;
+      while j > 0 && arr[j] < arr[j - 1] {
+          arr.swap(j, j - 1);
+          j = j - 1;
+      }
+  }
   }
 }
 
@@ -95,22 +101,22 @@ impl Sort {
 
 
 fn move_down<T: Ord>(arr: &mut [T], mut root: usize) {
-  let last = arr.len() - 1;
-  loop {
-      let left = 2 * root + 1;
-      if left > last {
-          break;
-      }
-      let right = left + 1;
-      let child = if right <= last && arr[right] > arr[left] {
-          right
-      } else {
-          left
-      };
+    let last = arr.len() - 1;
+    loop {
+        let left = 2 * root + 1;
+        if left > last {
+            break;
+        }
+        let right = left + 1;
+        let child = if right <= last && arr[right] > arr[left] {
+            right
+        } else {
+            left
+        };
 
-      if arr[child] > arr[root] {
-          arr.swap(root, child);
-      }
-      root = child;
-  }
+        if arr[child] > arr[root] {
+            arr.swap(root, child);
+        }
+        root = child;
+    }
 }
