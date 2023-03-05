@@ -44,11 +44,16 @@ impl SortAlgorithm for InsertionSort {
   }
 }
 
-// strategy bubble sort
 pub struct BubbleSort;
 impl SortAlgorithm for BubbleSort {
-  fn sort<T>(&self, arr: &mut [T]) {
-    println!("bubble sort ! #TODO");
+  fn sort<T: Ord>(&self, arr: &mut [T]) {
+    for i in 0..arr.len() {
+      for j in 0..arr.len() - 1 - i {
+          if arr[j] > arr[j + 1] {
+              arr.swap(j, j + 1);
+          }
+      }
+  }
   }
 }
 
